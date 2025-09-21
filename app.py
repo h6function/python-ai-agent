@@ -1,7 +1,10 @@
+import gradio as gr
 import os
 import sys
 from agents import Agent, Runner
 from dotenv import load_dotenv
+from typing import List
+
 
 load_dotenv()
 
@@ -14,9 +17,41 @@ agent = Agent(
     instructions="あなたは役に立つアシスタントです。",
 )
 
-result = Runner.run_sync(
-    agent,
-    "プログラミングに関する俳句を書いてください。",
-)
 
-print(result.final_output)
+with gr.Blocks() as demo:
+    chatbot = gr.Chatbot(type="messages")
+    msg = gr.Textbox()
+    clear = gr.ClearButton(chatbot)
+    chat_history: List[gr.ChatMessage] = []
+
+
+    async def _submit_func(message: str, chat_history: List[gr.ChatMessage]):
+        chat_history.append(gr.ChatMessage(
+            role="user",
+            content=message,
+        ))
+
+        chat_history.append(gr.ChatMessage(
+            role="assistant",
+            content="いま考えてるからちょっと待ってください...",
+        ))
+
+        yield "", chat_history
+
+        result = await Runner.run(
+            starting_agent=agent,
+            input=message,
+        )
+
+        chat_history[-1].content = result.final_output
+        yield "", chat_history
+
+
+    msg.submit(
+        fn=_submit_func,
+        inputs=[msg, chatbot],
+        outputs=[msg, chatbot],
+    )
+
+
+demo.launch()
