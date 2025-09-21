@@ -54,5 +54,13 @@ with gr.Blocks() as app:
     )
 
 
+def authentication_func(username: str, password: str) -> bool:
+    # TODO: Need to implement authentication
+    if password != "invalid":
+        return True
+
+    return False
+
+
 if __name__ == "__main__":
-    app.launch()
+    app.launch(auth=authentication_func)
