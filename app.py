@@ -54,4 +54,5 @@ with gr.Blocks() as demo:
     )
 
 
-demo.launch()
+if __name__ == "__main__":
+    demo.launch()
