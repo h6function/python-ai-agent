@@ -12,13 +12,13 @@ if not os.getenv("OPENAI_API_KEY"):
     print("Please set the OPENAI_API_KEY environment variable.")
     sys.exit(1)
 
-agent = Agent(
+assistant = Agent(
     name="アシスタント",
     instructions="あなたは役に立つアシスタントです。",
 )
 
 
-with gr.Blocks() as demo:
+with gr.Blocks() as app:
     chatbot = gr.Chatbot(type="messages")
     msg = gr.Textbox()
     clear = gr.ClearButton(chatbot)
@@ -39,7 +39,7 @@ with gr.Blocks() as demo:
         yield "", chat_history
 
         result = await Runner.run(
-            starting_agent=agent,
+            starting_agent=assistant,
             input=message,
         )
 
@@ -55,4 +55,4 @@ with gr.Blocks() as demo:
 
 
 if __name__ == "__main__":
-    demo.launch()
+    app.launch()
